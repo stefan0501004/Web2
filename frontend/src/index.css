@@ -1,3 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bs-body-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --bs-primary: #1f6f5c;
+  --bs-primary-rgb: 31, 111, 92;
+  --bs-secondary: #6b6558;
+  --bs-secondary-rgb: 107, 101, 88;
+  --bs-success: #3f8f5f;
+  --bs-success-rgb: 63, 143, 95;
+  --bs-danger: #c8553d;
+  --bs-danger-rgb: 200, 85, 61;
+  --bs-warning: #d9a441;
+  --bs-warning-rgb: 217, 164, 65;
+  --bs-info: #3d7ea6;
+  --bs-info-rgb: 61, 126, 166;
+  --bs-light: #f5f1ea;
+  --bs-light-rgb: 245, 241, 234;
+  --bs-dark: #2b2a27;
+  --bs-dark-rgb: 43, 42, 39;
+
+  --bs-body-bg: #faf7f2;
+  --bs-body-color: #2b2a27;
+  --bs-border-color: #e5ddd0;
+  --bs-link-color: #1f6f5c;
+  --bs-link-color-rgb: 31, 111, 92;
+  --bs-link-hover-color: #175647;
+  --bs-link-hover-color-rgb: 23, 86, 71;
+  --bs-focus-ring-color: rgba(31, 111, 92, .25);
+
+  --bs-border-radius: 0.7rem;
+  --bs-border-radius-sm: 0.5rem;
+  --bs-border-radius-lg: 1rem;
+  --bs-box-shadow: 0 .5rem 1.5rem rgba(43, 42, 39, .08);
+  --bs-box-shadow-sm: 0 .25rem .5rem rgba(43, 42, 39, .06);
+}
+
 body {
   margin: 0;
+  background: var(--bs-body-bg);
+}
+
+/* Buttons */
+.btn {
+  --bs-btn-border-radius: 0.6rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  --bs-btn-bg: #1f6f5c;
+  --bs-btn-border-color: #1f6f5c;
+  --bs-btn-hover-bg: #175647;
+  --bs-btn-hover-border-color: #175647;
+  --bs-btn-active-bg: #124a3d;
+  --bs-btn-active-border-color: #124a3d;
+  --bs-btn-disabled-bg: #1f6f5c;
+  --bs-btn-disabled-border-color: #1f6f5c;
+  --bs-btn-focus-shadow-rgb: 31, 111, 92;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #1f6f5c;
+  --bs-btn-border-color: #1f6f5c;
+  --bs-btn-hover-bg: #1f6f5c;
+  --bs-btn-hover-border-color: #1f6f5c;
+  --bs-btn-active-bg: #1f6f5c;
+  --bs-btn-active-border-color: #1f6f5c;
+  --bs-btn-focus-shadow-rgb: 31, 111, 92;
+}
+
+.btn-secondary {
+  --bs-btn-bg: #6b6558;
+  --bs-btn-border-color: #6b6558;
+  --bs-btn-hover-bg: #56514a;
+  --bs-btn-hover-border-color: #56514a;
+  --bs-btn-active-bg: #45413b;
+  --bs-btn-active-border-color: #45413b;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: #6b6558;
+  --bs-btn-border-color: #a39c8c;
+  --bs-btn-hover-bg: #6b6558;
+  --bs-btn-hover-border-color: #6b6558;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: #c8553d;
+  --bs-btn-border-color: #c8553d;
+  --bs-btn-hover-bg: #c8553d;
+  --bs-btn-hover-border-color: #c8553d;
+}
+
+.btn-outline-light {
+  --bs-btn-color: #2b2a27;
+  --bs-btn-border-color: #e5ddd0;
+  --bs-btn-hover-bg: #f5f1ea;
+  --bs-btn-hover-color: #2b2a27;
+  --bs-btn-hover-border-color: #e5ddd0;
+}
+
+.btn-link {
+  --bs-btn-color: #1f6f5c;
+  --bs-btn-hover-color: #175647;
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus {
+  border-color: #8fbcae;
+  box-shadow: 0 0 0 .25rem rgba(31, 111, 92, .15);
+}
+
+/* Cards */
+.card {
+  border-color: var(--bs-border-color);
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+/* Alerts */
+.alert-danger {
+  --bs-alert-color: #8a3a29;
+  --bs-alert-bg: #f7e3de;
+  --bs-alert-border-color: #eec4b8;
+}
+
+/* Nav tabs */
+.nav-tabs .nav-link {
+  color: var(--bs-secondary);
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-link:hover {
+  color: #1f6f5c;
+  background: transparent;
+  border-color: transparent transparent #1f6f5c;
+}
+
+/* Table */
+.table-hover > tbody > tr:hover > * {
+  background-color: #f2ede3;
 }

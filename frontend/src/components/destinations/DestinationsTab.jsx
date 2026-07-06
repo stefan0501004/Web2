@@ -103,21 +103,29 @@ export default function DestinationsTab({ planId }) {
 
       {destinations.length === 0
         ? <p className="text-muted">No destinations added yet.</p>
-        : <div className="row g-3">
-            {destinations.map(d => (
-              <div key={d.id} className="col-md-6">
-                <div className="card">
-                  <div className="card-body">
-                    <div className="d-flex justify-content-between">
-                      <h6 className="mb-1">{d.name}</h6>
+        : <div className="d-flex flex-column gap-3">
+            {destinations.map((d, i) => (
+              <div key={d.id} className="card">
+                <div className="card-body d-flex gap-3">
+                  <div
+                    className="d-flex align-items-center justify-content-center rounded-circle bg-primary text-white fw-bold flex-shrink-0"
+                    style={{ width: 40, height: 40 }}
+                  >
+                    {i + 1}
+                  </div>
+                  <div className="flex-grow-1">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h6 className="mb-1">{d.name}</h6>
+                        <p className="text-muted small mb-0">📍 {d.location}</p>
+                      </div>
                       <div className="d-flex gap-1">
                         <button className="btn btn-sm btn-outline-secondary" onClick={() => handleEdit(d)}>Edit</button>
                         <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(d.id)}>✕</button>
                       </div>
                     </div>
-                    <p className="text-muted small mb-1">📍 {d.location}</p>
-                    <p className="small mb-0">{d.arrivalDate} → {d.departureDate}</p>
-                    {d.description && <p className="small text-muted mt-1 mb-0">{d.description}</p>}
+                    <span className="badge bg-light text-dark border mt-2">{d.arrivalDate} → {d.departureDate}</span>
+                    {d.description && <p className="small text-muted mt-2 mb-0">{d.description}</p>}
                   </div>
                 </div>
               </div>

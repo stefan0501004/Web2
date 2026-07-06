@@ -99,28 +99,26 @@ export default function TravelPlanDetailPage() {
 
 function OverviewTab({ plan }) {
   return (
-    <div className="row g-3">
-      <div className="col-md-8">
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Details</h5>
-            {plan.description && <p>{plan.description}</p>}
-            {plan.notes && <><hr /><p className="text-muted">{plan.notes}</p></>}
-          </div>
+    <div>
+      <div className="d-flex flex-wrap gap-3 mb-3">
+        <div className="flex-fill text-center p-3 rounded text-white" style={{ background: 'linear-gradient(160deg, #1f6f5c, #124a3d)' }}>
+          <p className="small mb-1 opacity-75">Budget</p>
+          <h4 className="mb-0">${plan.budget.toLocaleString()}</h4>
+        </div>
+        <div className="flex-fill text-center p-3 rounded border">
+          <p className="text-muted small mb-1">Start</p>
+          <h5 className="mb-0">{plan.startDate}</h5>
+        </div>
+        <div className="flex-fill text-center p-3 rounded border">
+          <p className="text-muted small mb-1">End</p>
+          <h5 className="mb-0">{plan.endDate}</h5>
         </div>
       </div>
-      <div className="col-md-4">
-        <div className="card bg-primary text-white">
-          <div className="card-body text-center">
-            <h6 className="card-title">Budget</h6>
-            <h3>${plan.budget.toLocaleString()}</h3>
-          </div>
-        </div>
-        <div className="card mt-3">
-          <div className="card-body">
-            <p className="mb-1"><strong>Start:</strong> {plan.startDate}</p>
-            <p className="mb-0"><strong>End:</strong> {plan.endDate}</p>
-          </div>
+      <div className="card">
+        <div className="card-body">
+          <h5 className="card-title">Details</h5>
+          {plan.description && <p>{plan.description}</p>}
+          {plan.notes && <><hr /><p className="text-muted">{plan.notes}</p></>}
         </div>
       </div>
     </div>

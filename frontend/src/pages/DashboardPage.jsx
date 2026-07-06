@@ -39,7 +39,10 @@ export default function DashboardPage() {
       <Navbar />
       <div className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">My Travel Plans</h2>
+          <div>
+            <h2 className="mb-1">My Travel Plans</h2>
+            <p className="text-muted mb-0">Manage your upcoming adventures</p>
+          </div>
           <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ New Plan</button>
         </div>
 
@@ -62,7 +65,7 @@ export default function DashboardPage() {
             ? <p className="text-muted text-center mt-5">No travel plans yet. Create your first one!</p>
             : <div className="row g-3">
                 {plans.map(plan => (
-                  <div key={plan.id} className="col-md-6 col-lg-4">
+                  <div key={plan.id} className="col-md-6">
                     <TravelPlanCard
                       plan={plan}
                       onClick={() => navigate(`/plans/${plan.id}`)}

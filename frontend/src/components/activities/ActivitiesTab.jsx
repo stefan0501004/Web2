@@ -85,11 +85,11 @@ export default function ActivitiesTab({ planId }) {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5>Activities</h5>
         <div className="d-flex gap-2">
+          <button className="btn btn-primary btn-sm" onClick={() => { setShowForm(true); setEditing(null); setForm(emptyForm()); }}>+ Add Activity</button>
           <div className="btn-group btn-group-sm">
             <button className={`btn ${view === 'list' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setView('list')}>List</button>
             <button className={`btn ${view === 'calendar' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setView('calendar')}>Calendar</button>
           </div>
-          <button className="btn btn-primary btn-sm" onClick={() => { setShowForm(true); setEditing(null); setForm(emptyForm()); }}>+ Add Activity</button>
         </div>
       </div>
       <ErrorMessage message={error} />
@@ -157,22 +157,24 @@ export default function ActivitiesTab({ planId }) {
 
 function ActivityList({ activities, onEdit, onDelete }) {
   return (
-    <div className="list-group">
+    <div className="d-flex flex-column gap-2">
       {activities.map(a => (
-        <div key={a.id} className="list-group-item d-flex justify-content-between align-items-start">
-          <div>
-            <div className="d-flex align-items-center gap-2 mb-1">
-              <strong>{a.name}</strong>
-              <span className={`badge bg-${STATUS_COLORS[a.status]}`}>{a.status}</span>
+        <div key={a.id} className="card">
+          <div className="card-body d-flex justify-content-between align-items-start gap-3 py-2">
+            <div>
+              <div className="d-flex align-items-center gap-2 mb-1">
+                <span className={`badge bg-${STATUS_COLORS[a.status]}`}>{a.status}</span>
+                <strong>{a.name}</strong>
+              </div>
+              <p className="mb-0 small text-muted">
+                📅 {a.date}{a.time ? ` · ${a.time}` : ''}{a.location ? ` · 📍 ${a.location}` : ''}
+                {a.estimatedCost ? ` · $${a.estimatedCost}` : ''}
+              </p>
             </div>
-            <p className="mb-0 small text-muted">
-              {a.date}{a.time ? ` at ${a.time}` : ''}{a.location ? ` · ${a.location}` : ''}
-              {a.estimatedCost ? ` · $${a.estimatedCost}` : ''}
-            </p>
-          </div>
-          <div className="d-flex gap-1">
-            <button className="btn btn-sm btn-outline-secondary" onClick={() => onEdit(a)}>Edit</button>
-            <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(a.id)}>✕</button>
+            <div className="d-flex gap-1 flex-shrink-0">
+              <button className="btn btn-sm btn-outline-secondary" onClick={() => onEdit(a)}>Edit</button>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(a.id)}>✕</button>
+            </div>
           </div>
         </div>
       ))}
@@ -182,24 +184,28 @@ function ActivityList({ activities, onEdit, onDelete }) {
 
 function CalendarView({ grouped, onEdit, onDelete }) {
   return (
-    <div>
+    <div className="d-flex flex-column gap-4">
       {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, acts]) => (
-        <div key={date} className="mb-3">
-          <h6 className="text-primary border-bottom pb-1">{date}</h6>
-          <div className="list-group">
+        <div key={date}>
+          <h6 className="text-primary mb-2">{date}</h6>
+          <div className="d-flex flex-column gap-2">
             {acts.map(a => (
-              <div key={a.id} className="list-group-item d-flex justify-content-between align-items-start">
-                <div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="text-muted small">{a.time || '--:--'}</span>
-                    <strong>{a.name}</strong>
-                    <span className={`badge bg-${STATUS_COLORS[a.status]}`}>{a.status}</span>
+              <div key={a.id} className="card">
+                <div className="card-body d-flex justify-content-between align-items-center gap-3 py-2">
+                  <div className="d-flex align-items-center gap-3">
+                    <span className="badge bg-light text-dark border">{a.time || '--:--'}</span>
+                    <div>
+                      <div className="d-flex align-items-center gap-2">
+                        <strong>{a.name}</strong>
+                        <span className={`badge bg-${STATUS_COLORS[a.status]}`}>{a.status}</span>
+                      </div>
+                      {a.location && <p className="mb-0 small text-muted">📍 {a.location}</p>}
+                    </div>
                   </div>
-                  {a.location && <p className="mb-0 small text-muted">📍 {a.location}</p>}
-                </div>
-                <div className="d-flex gap-1">
-                  <button className="btn btn-sm btn-outline-secondary" onClick={() => onEdit(a)}>Edit</button>
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(a.id)}>✕</button>
+                  <div className="d-flex gap-1 flex-shrink-0">
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => onEdit(a)}>Edit</button>
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(a.id)}>✕</button>
+                  </div>
                 </div>
               </div>
             ))}

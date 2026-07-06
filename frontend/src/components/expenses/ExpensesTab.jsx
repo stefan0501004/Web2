@@ -83,18 +83,18 @@ export default function ExpensesTab({ planId }) {
         <div className="card mb-4">
           <div className="card-body">
             <h5 className="card-title">Budget Summary</h5>
-            <div className="row g-3 mb-3">
-              <div className="col-md-4 text-center">
+            <div className="d-flex flex-wrap gap-3 mb-3">
+              <div className="flex-fill text-center p-3 rounded border">
                 <p className="text-muted small mb-1">Planned Budget</p>
-                <h4 className="text-primary">${summary.plannedBudget.toLocaleString()}</h4>
+                <h4 className="text-primary mb-0">${summary.plannedBudget.toLocaleString()}</h4>
               </div>
-              <div className="col-md-4 text-center">
+              <div className="flex-fill text-center p-3 rounded border">
                 <p className="text-muted small mb-1">Total Spent</p>
-                <h4 className="text-danger">${summary.totalSpent.toLocaleString()}</h4>
+                <h4 className="text-danger mb-0">${summary.totalSpent.toLocaleString()}</h4>
               </div>
-              <div className="col-md-4 text-center">
+              <div className="flex-fill text-center p-3 rounded border">
                 <p className="text-muted small mb-1">Remaining</p>
-                <h4 className={summary.remaining >= 0 ? 'text-success' : 'text-danger'}>
+                <h4 className={`mb-0 ${summary.remaining >= 0 ? 'text-success' : 'text-danger'}`}>
                   ${summary.remaining.toLocaleString()}
                 </h4>
               </div>

@@ -31,11 +31,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="card shadow" style={{ width: '100%', maxWidth: 420 }}>
-        <div className="card-body p-4">
-          <h3 className="card-title text-center mb-4 text-primary fw-bold">TravelApp</h3>
-          <h5 className="text-center text-muted mb-4">Create an account</h5>
+    <div className="min-vh-100 d-flex">
+      <div
+        className="d-none d-md-flex flex-column justify-content-center text-white p-5"
+        style={{ width: '42%', background: 'linear-gradient(160deg, #1f6f5c, #124a3d)' }}
+      >
+        <h1 className="fw-bold mb-3">TravelApp</h1>
+        <p className="fs-5 mb-0">
+          Create an account and start organizing your next adventure in minutes.
+        </p>
+      </div>
+      <div className="d-flex align-items-center justify-content-center p-4" style={{ width: '100%' }}>
+        <div style={{ width: '100%', maxWidth: 380 }}>
+          <h3 className="fw-bold mb-1">Create an account</h3>
+          <p className="text-muted mb-4">Join TravelApp to start planning</p>
           <ErrorMessage message={error} />
           <form onSubmit={handleSubmit}>
             <div className="row g-2 mb-3">

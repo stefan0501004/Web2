@@ -67,7 +67,30 @@ export default function ChecklistTab({ planId }) {
         </div>
       )}
 
-      <form onSubmit={handleAdd} className="d-flex gap-2 mb-3">
+      {items.length === 0
+        ? <p className="text-muted">No checklist items yet.</p>
+        : <div className="d-flex flex-column gap-2 mb-3">
+            {items.map(item => (
+              <div key={item.id} className="card">
+                <div className="card-body d-flex align-items-center gap-3 py-2">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={item.isCompleted}
+                    onChange={() => handleToggle(item.id)}
+                    style={{ width: 20, height: 20, cursor: 'pointer' }}
+                  />
+                  <span className={`flex-grow-1 ${item.isCompleted ? 'text-muted text-decoration-line-through' : ''}`}>
+                    {item.name}
+                  </span>
+                  <button className="btn btn-sm btn-outline-danger ms-auto" onClick={() => handleDelete(item.id)}>✕</button>
+                </div>
+              </div>
+            ))}
+          </div>
+      }
+
+      <form onSubmit={handleAdd} className="d-flex gap-2">
         <input
           className="form-control"
           placeholder="Add checklist item..."
@@ -78,27 +101,6 @@ export default function ChecklistTab({ planId }) {
         <button type="submit" className="btn btn-primary">Add</button>
       </form>
       {addError && <ErrorMessage message={addError} />}
-
-      {items.length === 0
-        ? <p className="text-muted">No checklist items yet.</p>
-        : <div className="list-group">
-            {items.map(item => (
-              <div key={item.id} className="list-group-item d-flex align-items-center gap-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={item.isCompleted}
-                  onChange={() => handleToggle(item.id)}
-                  style={{ width: 20, height: 20, cursor: 'pointer' }}
-                />
-                <span className={`flex-grow-1 ${item.isCompleted ? 'text-muted text-decoration-line-through' : ''}`}>
-                  {item.name}
-                </span>
-                <button className="btn btn-sm btn-outline-danger ms-auto" onClick={() => handleDelete(item.id)}>✕</button>
-              </div>
-            ))}
-          </div>
-      }
     </div>
   );
 }

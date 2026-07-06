@@ -28,11 +28,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="card shadow" style={{ width: '100%', maxWidth: 420 }}>
-        <div className="card-body p-4">
-          <h3 className="card-title text-center mb-4 text-primary fw-bold">TravelApp</h3>
-          <h5 className="text-center text-muted mb-4">Sign in to your account</h5>
+    <div className="min-vh-100 d-flex">
+      <div
+        className="d-none d-md-flex flex-column justify-content-center text-white p-5"
+        style={{ width: '42%', background: 'linear-gradient(160deg, #1f6f5c, #124a3d)' }}
+      >
+        <h1 className="fw-bold mb-3">TravelApp</h1>
+        <p className="fs-5 mb-0">
+          Plan your trips, track your budget, and share the journey with the people who matter.
+        </p>
+      </div>
+      <div className="d-flex align-items-center justify-content-center p-4" style={{ width: '100%' }}>
+        <div style={{ width: '100%', maxWidth: 380 }}>
+          <h3 className="fw-bold mb-1">Welcome back</h3>
+          <p className="text-muted mb-4">Sign in to your account</p>
           <ErrorMessage message={error} />
           <form onSubmit={handleSubmit}>
             <div className="mb-3">

@@ -111,30 +111,30 @@ export default function SharingTab({ planId }) {
 
       {tokens.length === 0
         ? <p className="text-muted">No active share links.</p>
-        : <div className="list-group">
+        : <div className="d-flex flex-column gap-2">
             {tokens.map(t => {
               const expired = t.expiresAt && new Date(t.expiresAt) < new Date();
               return (
-                <div key={t.id} className="list-group-item">
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div className="flex-grow-1 me-2">
-                      <div className="d-flex align-items-center gap-2 mb-1">
+                <div key={t.id} className="card">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <div className="d-flex align-items-center gap-2">
                         <span className={`badge ${t.accessType === 'EDIT' ? 'bg-warning text-dark' : 'bg-info text-dark'}`}>
                           {t.accessType === 'EDIT' ? 'Edit' : 'View'}
                         </span>
                         {expired && <span className="badge bg-danger">Expired</span>}
                       </div>
-                      <div className="d-flex gap-2 align-items-center">
-                        <input className="form-control form-control-sm" readOnly value={shareUrl(t.token)} />
-                        <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => copyToClipboard(shareUrl(t.token))}>Copy</button>
-                      </div>
-                      {t.expiresAt && (
-                        <p className="small text-muted mt-1 mb-0">
-                          Expires: {new Date(t.expiresAt).toLocaleString()}
-                        </p>
-                      )}
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(t.id)}>Revoke</button>
                     </div>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(t.id)}>Revoke</button>
+                    <div className="d-flex gap-2 align-items-center">
+                      <input className="form-control form-control-sm" readOnly value={shareUrl(t.token)} />
+                      <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => copyToClipboard(shareUrl(t.token))}>Copy</button>
+                    </div>
+                    {t.expiresAt && (
+                      <p className="small text-muted mt-2 mb-0">
+                        Expires: {new Date(t.expiresAt).toLocaleString()}
+                      </p>
+                    )}
                   </div>
                 </div>
               );

@@ -11,15 +11,15 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
       <div className="container">
-        <Link className="navbar-brand fw-bold" to="/dashboard">TravelApp</Link>
+        <Link className="navbar-brand fw-bold text-primary" to="/dashboard">TravelApp</Link>
         <div className="d-flex align-items-center gap-3">
           {user?.isAdmin && (
-            <Link className="nav-link text-white" to="/admin">Admin</Link>
+            <Link className="nav-link fw-medium" to="/admin">Admin</Link>
           )}
-          <span className="text-white-50 small">{user?.fullName}</span>
-          <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
+          <span className="text-muted small">{user?.fullName}</span>
+          <button className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>
             Logout
           </button>
         </div>
