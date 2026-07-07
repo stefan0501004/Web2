@@ -2,10 +2,6 @@
 
 TravelApp je web aplikacija za organizaciju putovanja. Korisnik može da kreira plan putovanja, doda destinacije, aktivnosti po danima, troškove, checklist stavke i da podeli plan drugim osobama preko share linka ili QR koda.
 
-Projekat je rađen za predmet **Primena veb programiranja u infrastrukturnim sistemima**.
-
-> Napomena: README opisuje osnovni projekat. Dodatna nadogradnja iz poslednje strane specifikacije, kao što su LDAP SSO ili prikaz rute na mapi, nije deo ove implementacije.
-
 ---
 
 ## Funkcionalnosti
