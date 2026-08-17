@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Vrednosti za deployment na pravi (multi-node / Azure) klaster.
+     Pre deploy-a promeniti SqlConnectionString i JwtKey na produkcione vrednosti (npr. preko Key Vault-a),
+     i URL-ove servisa na stvarne cluster/reverse-proxy adrese. -->
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/TravelApp" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="ASPNETCORE_ENVIRONMENT" Value="Production" />
+    <Parameter Name="SqlConnectionString" Value="Server=localhost;Database=TravelApp;Trusted_Connection=True;TrustServerCertificate=True;" />
+    <Parameter Name="JwtKey" Value="TravelAppSuperSecretKey_ChangeInProduction_2024!" />
+    <Parameter Name="JwtIssuer" Value="TravelApp" />
+    <Parameter Name="JwtAudience" Value="TravelAppClient" />
+    <Parameter Name="AllowedOrigin" Value="http://localhost:5173" />
+    <Parameter Name="FrontendUrl" Value="http://localhost:5173" />
+    <Parameter Name="AuthServiceUrl" Value="http://localhost:5001" />
+    <Parameter Name="TravelPlanServiceUrl" Value="http://localhost:5002" />
+    <Parameter Name="ExpenseServiceUrl" Value="http://localhost:5003" />
+    <Parameter Name="SharingServiceUrl" Value="http://localhost:5004" />
+    <Parameter Name="AuthService_InstanceCount" Value="-1" />
+    <Parameter Name="ExpenseService_InstanceCount" Value="-1" />
+    <Parameter Name="SharingService_InstanceCount" Value="-1" />
+    <Parameter Name="TravelPlanService_TargetReplicaSetSize" Value="3" />
+    <Parameter Name="TravelPlanService_MinReplicaSetSize" Value="2" />
+  </Parameters>
+</Application>

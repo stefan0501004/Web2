@@ -4,6 +4,14 @@ obj/
 *.user
 .vs/
 
+# NuGet (legacy packages.config restore, korišćeno od TravelApp.Application.sfproj)
+packages/
+
+# Service Fabric build/publish output
+pkg/
+*.sfpkg
+TestResults/
+
 # Node
 node_modules/
 dist/

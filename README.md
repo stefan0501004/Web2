@@ -143,7 +143,7 @@ Sistem generiše i QR kod za deljenje. Share token se validira na backend strani
 - SQL Server
 - JWT Authentication
 - BCrypt.Net
-- Microsoft Service Fabric biblioteke
+- Microsoft Service Fabric (mikroservisna arhitektura - 1 stateful + 3 stateless servisa, deployable SF aplikacija u `backend/TravelApp.Application`)
 - QRCoder
 
 ### Baza podataka
@@ -187,10 +187,11 @@ Servisi koriste istu SQL Server bazu `TravelApp`, ali odvojene šeme:
 ```text
 Web2-main/
 ├── backend/
-│   ├── AuthService/
-│   ├── TravelPlanService/
-│   ├── ExpenseService/
-│   ├── SharingService/
+│   ├── AuthService/            (stateless SF servis - PackageRoot/ServiceManifest.xml)
+│   ├── TravelPlanService/      (stateful SF servis - Reliable Collections)
+│   ├── ExpenseService/         (stateless SF servis)
+│   ├── SharingService/         (stateless SF servis)
+│   ├── TravelApp.Application/  (SF Application projekat - ApplicationManifest.xml, deploy)
 │   ├── Database/
 │   │   └── Migrations/
 │   │       ├── 001_CreateAuthSchema.sql
@@ -321,9 +322,11 @@ Primer za SQL Express:
 
 ---
 
-## Pokretanje backend-a
+## Pokretanje backend-a — brzi razvojni režim (bez SF klastera)
 
-Backend se sastoji od 4 odvojena servisa. Najjednostavnije je pokrenuti ih iz 4 odvojena terminala.
+Backend se sastoji od 4 odvojena servisa. Za svakodnevni razvoj najjednostavnije je pokrenuti ih iz 4 odvojena terminala pomoću `dotnet run` — svaki servis tada radi kao običan Kestrel/ASP.NET Core proces, van Service Fabric klastera.
+
+Ovo je isključivo razvojni prečac. **Stvarna arhitektura projekta je Service Fabric aplikacija** (1 stateful + 3 stateless servisa) — vidi sekciju [Pokretanje kroz Service Fabric](#pokretanje-kroz-service-fabric-stvarna-arhitektura) ispod za deploy na pravi lokalni SF klaster. Svaki servis prepoznaje pod kojim režimom je pokrenut automatski: ako ga pokreće Service Fabric host (postavljena `Fabric_ApplicationName` env promenljiva), registruje se kao pravi SF servis; u suprotnom se pokreće plain Kestrel host kao ispod.
 
 ### Terminal 1 — AuthService
 
@@ -359,6 +362,61 @@ Svaki servis treba da ispiše poruku sličnu ovoj:
 Now listening on: http://localhost:500X
 Application started.
 ```
+
+---
+
+## Pokretanje kroz Service Fabric (stvarna arhitektura)
+
+Backend je organizovan kao prava Service Fabric aplikacija: `backend/TravelApp.Application` (SF Application projekat) uvozi 4 servisna paketa — `AuthService`, `ExpenseService`, `SharingService` (stateless) i `TravelPlanService` (**stateful**, koristi Reliable Collections). Svaki servis ima svoj `PackageRoot/ServiceManifest.xml` i registruje se kroz `ServiceRuntime.RegisterServiceAsync` kada ga pokrene SF host (`backend/*/Program.cs`, grana za `Fabric_ApplicationName != null`).
+
+### Preduslovi
+
+- Service Fabric SDK (već instaliran na ovoj mašini: `C:\Program Files\Microsoft SDKs\Service Fabric`)
+- Visual Studio 2022 sa komponentom **Azure Service Fabric Tools** (već instalirana)
+- Lokalni jednonodni SF dev klaster
+
+### 1. Podešavanje SQL pristupa za SF servise (jednom po mašini)
+
+Kada servise pokreće Service Fabric host, proces radi pod drugim Windows identitetom nego kad pokreneš `dotnet run` (ne pod tvojim ličnim nalogom, obično Network Service) — `Trusted_Connection=True` iz `appsettings.json` tu ne prolazi (login failed za mašinski nalog tipa `RAČUNAR\IME-MASINE$`). Zato SF publish profil koristi poseban SQL login umesto Windows autentikacije.
+
+1. Uključi Mixed Mode Authentication na SQL Server-u (kroz `sqlcmd` ili SSMS → desni klik na server → Properties → Security → "SQL Server and Windows Authentication mode"):
+   ```sql
+   EXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'LoginMode', REG_DWORD, 2
+   ```
+2. Restartuj SQL Server servis da se promena primeni (`services.msc` → "SQL Server (MSSQLSERVER)" → Restart, ili `Restart-Service MSSQLSERVER` iz elevated PowerShell-a).
+3. Napravi login i daj mu pristup `TravelApp` bazi:
+   ```sql
+   CREATE LOGIN [travelapp_sf] WITH PASSWORD = N'TravelApp_SF_2026!', CHECK_POLICY = OFF;
+   USE TravelApp;
+   CREATE USER [travelapp_sf] FOR LOGIN [travelapp_sf];
+   ALTER ROLE db_owner ADD MEMBER [travelapp_sf];
+   ```
+
+Ovi kredencijali su već upisani u `backend/TravelApp.Application/ApplicationParameters/Local.1Node.xml` (`SqlConnectionString` parametar) — ako ih promeniš ovde, ažuriraj i taj fajl da se poklapaju. Ovaj korak ne utiče na `dotnet run` režim — appsettings.json i dalje koriste Windows auth kao i do sada.
+
+### 2. Pokretanje lokalnog klastera
+
+Preko **Service Fabric Local Cluster Manager** (ikonica u system tray-u / Start meniju — "Setup Local Cluster (1 Node)"), ili ručno kroz PowerShell (kao Administrator):
+
+```powershell
+& "C:\Program Files\Microsoft SDKs\Service Fabric\ClusterSetup\DevClusterSetup.ps1"
+```
+
+Nakon pokretanja, Service Fabric Explorer je dostupan na `http://localhost:19080`.
+
+### 3. Deploy aplikacije
+
+1. Otvoriti `backend/TravelApp.sln` u Visual Studio 2022.
+2. U Solution Explorer-u desni klik na `TravelApp.Application` → **Publish...**
+3. Izabrati profil `PublishProfiles\Local.1Node.xml` i kliknuti **Publish**.
+
+Visual Studio build-uje sva 4 servisna projekta, upakuje ih po `ServiceManifest.xml`/`ApplicationManifest.xml`, i deploy-uje na lokalni klaster preko `Scripts/Deploy-FabricApplication.ps1`.
+
+### 4. Provera
+
+- Service Fabric Explorer (`http://localhost:19080`) treba da pokaže aplikaciju `fabric:/TravelApp` sa 4 servisa — `TravelPlanService` kao **Stateful** (1 particija, 1 replika), ostala tri kao **Stateless**.
+- Servisi i dalje slušaju na istim portovima kao u dev režimu (5001–5004, definisano u `PackageRoot/ServiceManifest.xml` svakog servisa), tako da frontend `.env` ne treba menjati.
+- Konfiguracija (connection string, JWT, CORS origin, URL-ovi drugih servisa) se prosleđuje kroz `ApplicationManifest.xml` parametre → environment varijable po servisu, umesto direktno iz `appsettings.json` — za promenu vrednosti za deploy izmeniti `ApplicationParameters/Local.1Node.xml`, ne kod.
 
 ---
 
@@ -594,11 +652,10 @@ DELETE /api/sharing/{id}
 U folderu `docs/` nalaze se dodatni fajlovi:
 
 ```text
-docs/architecture-diagram.md
-docs/usecase-diagram.md
+docs/installation-guide.md   — detaljno, korak-po-korak uputstvo za instalaciju i pokretanje (oba režima + troubleshooting)
+docs/architecture-diagram.md — Mermaid dijagram arhitekture sistema
+docs/usecase-diagram.md      — use case dijagram
 ```
-
-Ovi fajlovi sadrže Mermaid dijagrame arhitekture i use case dijagram.
 
 ---
 

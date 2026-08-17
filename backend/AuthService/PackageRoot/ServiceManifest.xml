@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceManifest Name="AuthServicePkg"
+                  Version="1.0.0"
+                  xmlns="http://schemas.microsoft.com/2011/01/fabric"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ServiceTypes>
+    <StatelessServiceType ServiceTypeName="AuthServiceType" />
+  </ServiceTypes>
+
+  <CodePackage Name="Code" Version="1.0.0">
+    <EntryPoint>
+      <ExeHost>
+        <Program>AuthService.exe</Program>
+        <WorkingFolder>CodePackage</WorkingFolder>
+      </ExeHost>
+    </EntryPoint>
+    <EnvironmentVariables>
+      <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="" />
+      <EnvironmentVariable Name="ConnectionStrings__DefaultConnection" Value="" />
+      <EnvironmentVariable Name="Jwt__Key" Value="" />
+      <EnvironmentVariable Name="Jwt__Issuer" Value="" />
+      <EnvironmentVariable Name="Jwt__Audience" Value="" />
+      <EnvironmentVariable Name="AllowedOrigin" Value="" />
+    </EnvironmentVariables>
+  </CodePackage>
+
+  <ConfigPackage Name="Config" Version="1.0.0" />
+
+  <Resources>
+    <Endpoints>
+      <Endpoint Name="ServiceEndpoint" Protocol="http" Port="5001" Type="Input" />
+    </Endpoints>
+  </Resources>
+</ServiceManifest>

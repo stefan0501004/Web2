@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Security.Claims;
 using TravelPlanService.Data;
 using TravelPlanService.DTOs;
@@ -16,12 +17,14 @@ public class TravelPlansController : ControllerBase
     private readonly PlanningDbContext _db;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration _config;
+    private readonly ILogger<TravelPlansController> _logger;
 
-    public TravelPlansController(PlanningDbContext db, IHttpClientFactory httpClientFactory, IConfiguration config)
+    public TravelPlansController(PlanningDbContext db, IHttpClientFactory httpClientFactory, IConfiguration config, ILogger<TravelPlansController> logger)
     {
         _db = db;
         _httpClientFactory = httpClientFactory;
         _config = config;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -116,17 +119,43 @@ public class TravelPlansController : ControllerBase
         var plan = await _db.TravelPlans.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
         if (plan == null) return NotFound();
 
+        // Prvo obrisati povezane podatke u ostalim servisima - ako ne uspe, lokalni plan ostaje netaknut
+        if (!await DeleteRelatedDataAsync(id))
+            return StatusCode(StatusCodes.Status502BadGateway,
+                new { message = "Brisanje povezanih podataka (troškovi/deljenje) nije uspelo. Pokušajte ponovo." });
+
         _db.TravelPlans.Remove(plan);
         await _db.SaveChangesAsync();
 
-        // Cascade delete u ostalim servisima
-        var client = _httpClientFactory.CreateClient();
-        var token = Request.Headers["Authorization"].ToString();
-
-        _ = client.DeleteAsync($"{_config["ExpenseServiceUrl"]}/api/expenses/by-plan/{id}");
-        _ = client.DeleteAsync($"{_config["SharingServiceUrl"]}/api/sharing/by-plan/{id}");
-
         return NoContent();
+    }
+
+    // Cascade delete u ExpenseService i SharingService - await-ovano i sa error handling-om
+    // da brisanje plana ne ostavi osirotale redove ako drugi servis nije dostupan.
+    private async Task<bool> DeleteRelatedDataAsync(Guid planId)
+    {
+        var client = _httpClientFactory.CreateClient();
+        client.Timeout = TimeSpan.FromSeconds(10);
+
+        async Task<bool> SafeDelete(string url)
+        {
+            try
+            {
+                var response = await client.DeleteAsync(url);
+                return response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Cascade delete failed for {Url}", url);
+                return false;
+            }
+        }
+
+        var results = await Task.WhenAll(
+            SafeDelete($"{_config["ExpenseServiceUrl"]}/api/expenses/by-plan/{planId}"),
+            SafeDelete($"{_config["SharingServiceUrl"]}/api/sharing/by-plan/{planId}"));
+
+        return results.All(ok => ok);
     }
 
     [HttpPut("{id:guid}/by-token")]
@@ -189,12 +218,12 @@ public class TravelPlansController : ControllerBase
         var plan = await _db.TravelPlans.FirstOrDefaultAsync(p => p.Id == id);
         if (plan == null) return NotFound();
 
+        if (!await DeleteRelatedDataAsync(id))
+            return StatusCode(StatusCodes.Status502BadGateway,
+                new { message = "Brisanje povezanih podataka (troškovi/deljenje) nije uspelo. Pokušajte ponovo." });
+
         _db.TravelPlans.Remove(plan);
         await _db.SaveChangesAsync();
-
-        var client = _httpClientFactory.CreateClient();
-        _ = client.DeleteAsync($"{_config["ExpenseServiceUrl"]}/api/expenses/by-plan/{id}");
-        _ = client.DeleteAsync($"{_config["SharingServiceUrl"]}/api/sharing/by-plan/{id}");
 
         return NoContent();
     }

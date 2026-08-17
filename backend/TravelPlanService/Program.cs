@@ -1,46 +1,25 @@
-using TravelPlanService.Data;
-using TravelPlanService.Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.ServiceFabric.Services.Runtime;
 
-var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
-
-builder.Services.AddDbContext<PlanningDbContext>(options =>
-    options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+internal static class Program
+{
+    private static async Task Main(string[] args)
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        if (Environment.GetEnvironmentVariable("Fabric_ApplicationName") is not null)
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = config["Jwt:Issuer"],
-            ValidAudience = config["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
-        };
-    });
+            // Servis je pokrenut kroz Service Fabric klaster - registruje se kao pravi SF stateful servis.
+            await ServiceRuntime.RegisterServiceAsync("TravelPlanServiceType",
+                context => new TravelPlanStatefulService(context));
 
-builder.Services.AddAuthorization();
-builder.Services.AddHttpClient();
-builder.Services.AddControllers()
-    .AddJsonOptions(opts => opts.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter()));
-builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(p =>
-        p.WithOrigins(config["AllowedOrigin"]!)
-         .AllowAnyHeader().AllowAnyMethod()));
-
-var app = builder.Build();
-
-app.UseCors();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
+            Thread.Sleep(Timeout.Infinite);
+        }
+        else
+        {
+            // Brzi razvojni režim (dotnet run) - običan Kestrel host, bez SF klastera.
+            var builder = WebApplication.CreateBuilder(args);
+            Startup.ConfigureServices(builder);
+            var app = builder.Build();
+            Startup.ConfigureApp(app);
+            app.Run();
+        }
+    }
+}

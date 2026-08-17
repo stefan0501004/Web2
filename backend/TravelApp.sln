@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseService", "ExpenseSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharingService", "SharingService\SharingService.csproj", "{186F8BF8-CBD1-464E-A92E-DF0E7DDCB1BE}"
 EndProject
+Project("{A07B5EB6-E848-4116-A8D0-A826E7C2B32D}") = "TravelApp.Application", "TravelApp.Application\TravelApp.Application.sfproj", "{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,17 @@ Global
 		{186F8BF8-CBD1-464E-A92E-DF0E7DDCB1BE}.Release|x64.Build.0 = Release|Any CPU
 		{186F8BF8-CBD1-464E-A92E-DF0E7DDCB1BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{186F8BF8-CBD1-464E-A92E-DF0E7DDCB1BE}.Release|x86.Build.0 = Release|Any CPU
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Debug|Any CPU.Build.0 = Debug|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Debug|x64.ActiveCfg = Debug|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Debug|x64.Build.0 = Debug|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Debug|x64.Deploy.0 = Debug|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Debug|x86.ActiveCfg = Debug|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Release|Any CPU.ActiveCfg = Release|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Release|Any CPU.Build.0 = Release|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Release|x64.ActiveCfg = Release|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Release|x64.Build.0 = Release|x64
+		{8F1B1D2E-7A4C-4E5B-9B3A-2C6D8E1F4A9B}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

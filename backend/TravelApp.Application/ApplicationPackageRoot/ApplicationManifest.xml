@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="TravelAppApplicationType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <Parameter Name="ASPNETCORE_ENVIRONMENT" DefaultValue="Development" />
+    <Parameter Name="SqlConnectionString" DefaultValue="Server=localhost;Database=TravelApp;User Id=travelapp_sf;Password=TravelApp_SF_2026!;TrustServerCertificate=True;" />
+    <Parameter Name="JwtKey" DefaultValue="TravelAppSuperSecretKey_ChangeInProduction_2024!" />
+    <Parameter Name="JwtIssuer" DefaultValue="TravelApp" />
+    <Parameter Name="JwtAudience" DefaultValue="TravelAppClient" />
+    <Parameter Name="AllowedOrigin" DefaultValue="http://localhost:5173" />
+    <Parameter Name="FrontendUrl" DefaultValue="http://localhost:5173" />
+    <Parameter Name="AuthServiceUrl" DefaultValue="http://localhost:5001" />
+    <Parameter Name="TravelPlanServiceUrl" DefaultValue="http://localhost:5002" />
+    <Parameter Name="ExpenseServiceUrl" DefaultValue="http://localhost:5003" />
+    <Parameter Name="SharingServiceUrl" DefaultValue="http://localhost:5004" />
+    <Parameter Name="AuthService_InstanceCount" DefaultValue="1" />
+    <Parameter Name="ExpenseService_InstanceCount" DefaultValue="1" />
+    <Parameter Name="SharingService_InstanceCount" DefaultValue="1" />
+    <Parameter Name="TravelPlanService_TargetReplicaSetSize" DefaultValue="1" />
+    <Parameter Name="TravelPlanService_MinReplicaSetSize" DefaultValue="1" />
+  </Parameters>
+  <!-- Import ServiceManifest iz svakog od 4 servisna paketa i preklopi konfiguraciju
+       preko environment varijabli (ASP.NET Core config automatski čita Section__Key stil). -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="AuthServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+    <EnvironmentOverrides CodePackageRef="Code">
+      <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[ASPNETCORE_ENVIRONMENT]" />
+      <EnvironmentVariable Name="ConnectionStrings__DefaultConnection" Value="[SqlConnectionString]" />
+      <EnvironmentVariable Name="Jwt__Key" Value="[JwtKey]" />
+      <EnvironmentVariable Name="Jwt__Issuer" Value="[JwtIssuer]" />
+      <EnvironmentVariable Name="Jwt__Audience" Value="[JwtAudience]" />
+      <EnvironmentVariable Name="AllowedOrigin" Value="[AllowedOrigin]" />
+    </EnvironmentOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="TravelPlanServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+    <EnvironmentOverrides CodePackageRef="Code">
+      <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[ASPNETCORE_ENVIRONMENT]" />
+      <EnvironmentVariable Name="ConnectionStrings__DefaultConnection" Value="[SqlConnectionString]" />
+      <EnvironmentVariable Name="Jwt__Key" Value="[JwtKey]" />
+      <EnvironmentVariable Name="Jwt__Issuer" Value="[JwtIssuer]" />
+      <EnvironmentVariable Name="Jwt__Audience" Value="[JwtAudience]" />
+      <EnvironmentVariable Name="AllowedOrigin" Value="[AllowedOrigin]" />
+      <EnvironmentVariable Name="ExpenseServiceUrl" Value="[ExpenseServiceUrl]" />
+      <EnvironmentVariable Name="SharingServiceUrl" Value="[SharingServiceUrl]" />
+    </EnvironmentOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="ExpenseServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+    <EnvironmentOverrides CodePackageRef="Code">
+      <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[ASPNETCORE_ENVIRONMENT]" />
+      <EnvironmentVariable Name="ConnectionStrings__DefaultConnection" Value="[SqlConnectionString]" />
+      <EnvironmentVariable Name="Jwt__Key" Value="[JwtKey]" />
+      <EnvironmentVariable Name="Jwt__Issuer" Value="[JwtIssuer]" />
+      <EnvironmentVariable Name="Jwt__Audience" Value="[JwtAudience]" />
+      <EnvironmentVariable Name="AllowedOrigin" Value="[AllowedOrigin]" />
+      <EnvironmentVariable Name="TravelPlanServiceUrl" Value="[TravelPlanServiceUrl]" />
+    </EnvironmentOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="SharingServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+    <EnvironmentOverrides CodePackageRef="Code">
+      <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[ASPNETCORE_ENVIRONMENT]" />
+      <EnvironmentVariable Name="ConnectionStrings__DefaultConnection" Value="[SqlConnectionString]" />
+      <EnvironmentVariable Name="Jwt__Key" Value="[JwtKey]" />
+      <EnvironmentVariable Name="Jwt__Issuer" Value="[JwtIssuer]" />
+      <EnvironmentVariable Name="Jwt__Audience" Value="[JwtAudience]" />
+      <EnvironmentVariable Name="AllowedOrigin" Value="[AllowedOrigin]" />
+      <EnvironmentVariable Name="FrontendUrl" Value="[FrontendUrl]" />
+      <EnvironmentVariable Name="TravelPlanServiceUrl" Value="[TravelPlanServiceUrl]" />
+    </EnvironmentOverrides>
+  </ServiceManifestImport>
+  <DefaultServices>
+    <!-- 3 stateless servisa + 1 stateful servis (TravelPlanService), kako spec traži -->
+    <Service Name="AuthService" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="AuthServiceType" InstanceCount="[AuthService_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="TravelPlanService" ServicePackageActivationMode="ExclusiveProcess">
+      <StatefulService ServiceTypeName="TravelPlanServiceType" TargetReplicaSetSize="[TravelPlanService_TargetReplicaSetSize]" MinReplicaSetSize="[TravelPlanService_MinReplicaSetSize]">
+        <SingletonPartition />
+      </StatefulService>
+    </Service>
+    <Service Name="ExpenseService" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="ExpenseServiceType" InstanceCount="[ExpenseService_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+    <Service Name="SharingService" ServicePackageActivationMode="ExclusiveProcess">
+      <StatelessService ServiceTypeName="SharingServiceType" InstanceCount="[SharingService_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+  </DefaultServices>
+</ApplicationManifest>
